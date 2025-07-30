@@ -1,0 +1,45 @@
+# Stack for running basic OwnTracks in HTTP-only mode.
+# This does not have authentication or HTTPS, so it is
+# imperative that it is run behind an authed reverse proxy.
+
+services:
+  # OwnTracks Recorder in HTTP-only mode with no auth
+  owntracks-recorder:
+    image: owntracks/recorder
+    container_name: owntracks-recorder
+    restart: unless-stopped
+    ports:
+      - 8083:8083 # Web UI and HTTP API port
+    volumes:
+      - /mnt/ssd/Apps/OwnTracks/recorder/config:/config
+      - /mnt/ssd/Apps/OwnTracks/recorder/store:/store
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # Disable MQTT completely - HTTP only mode
+      OTR_PORT: "0"
+      # HTTP settings
+      OTR_HTTPHOST: 0.0.0.0
+      OTR_HTTPPORT: "8083"
+      # Enable HTTP basic authentication
+      OTR_HTTPAUTH: "true"
+      # Optional: Set a custom HTTP prefix
+      # OTR_HTTPPREFIX: "/owntracks"
+    networks:
+      - owntracks-net
+  # OwnTracks Frontend (provides enhanced web UI)
+  owntracks-frontend:
+    image: owntracks/frontend
+    container_name: owntracks-frontend
+    restart: unless-stopped
+    ports:
+      - 4080:80 # Frontend web UI port
+    environment:
+      SERVER_HOST: owntracks-recorder
+      SERVER_PORT: "8083"
+    networks:
+      - owntracks-net
+    depends_on:
+      - owntracks-recorder
+networks:
+  owntracks-net:
+    driver: bridge
