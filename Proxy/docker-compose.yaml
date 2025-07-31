@@ -14,7 +14,6 @@ services:
       - ./nginx/logs:/var/log/nginx
     networks:
       - proxy-network
-      - wireguard-network
     depends_on:
       - wireguard
 
@@ -41,7 +40,7 @@ services:
       - PEERS=1
       - PEERDNS=auto
       - INTERNAL_SUBNET=10.13.13.0
-      - ALLOWEDIPS=0.0.0.0/0
+      - ALLOWEDIPS=192.168.87.0/24
     volumes:
       - ./wireguard/config:/config
       - /lib/modules:/lib/modules
@@ -51,13 +50,8 @@ services:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped
     networks:
-      - wireguard-network
+      - proxy-network
 
 networks:
   proxy-network:
     driver: bridge
-  wireguard-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.13.13.0/24

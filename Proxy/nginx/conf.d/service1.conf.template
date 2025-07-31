@@ -29,8 +29,8 @@ server {
 
     # Proxy to homelab service through WireGuard
     location / {
-        # Replace with your homelab service IP:port inside WireGuard network
-        proxy_pass http://10.13.13.2:9090;
+        # Replace with your homelab service IP:port
+        proxy_pass http://192.168.1.123:8080;
         
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
