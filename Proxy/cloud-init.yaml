@@ -20,7 +20,6 @@ users:
     groups: sudo
     lock_passwd: true
     shell: /bin/bash
-# Non-production keys for illustrative purposes only,
     ssh-authorized-keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCy354szD9yNTleQlB9xzzNpxi/T+kk0GFZg/+bvMUpnt2XqK2LQ2yhCtsrqzGlivItddsIJR/OHMhLD5fGRv0TnJqyx4UC3fSKrl8tP97vRocsgkbr5pGnpVnGyekFodZ6r5Q4aX/xsLusL93iRv0tLmzW/KWRoUXXGrZdRCW04KR2mN9pqF/D4cbBAfGJBkJ/tfStNcKKS3AzJym0jDYetG2tRg/nNdRpmlxv57q1LbyfrINwFKTjsEupEPPTB7rHmBl4AjU+V+O9mwpCnY3Zvs9/g7EmJB0aV72Uadl21MmWqEOCYjK371zb3js3F0xQY0Cllt0z4MiMcGDaScYcbvDQgDmUm4J1yrZvOz+utOpEfWYyc8ydug57A/70W6z9frz0rPo0s/E9KGzDi/c5D3+2R+Rkxvr0KXnC4P8GzOF2W70j1r5gXdUx/i6vaPAZAywgFXPnqYEIbfwgKx9NABnL/3YlemC2PJ6673XwTK7mBz2bo8mmFXq+IzpbDJtuQk6vvIfAgT52n+xmJYawXVtkyicuKwkoNx/hTG54JlHw71isuJ9xjPwwQo3eVBEWDygXNw1JvC9zbUJjI1Hrd2vmKeUHdWmU/RJ2G0skHdN/tNyuLVRADG4c+Ckab/uTTVeuR8wMXrkEXOZzRCRRtb/AD6ajwpVvIn5S6WHeJQ== nxmin@Minhs-LG-Gram
 runcmd:
@@ -42,3 +41,11 @@ runcmd:
   - echo "alias update='sudo -- sh -c \"apt update; apt upgrade -y; apt dist-upgrade -y; apt autoremove -y; apt autoclean -y\"'" >> /home/minh/.bashrc
   - echo "alias shutdown-r='sudo shutdown -r now'" >> /home/minh/.bashrc
   - echo "export PATH=$PATH:/home/minh/scripts" >> /home/minh/.bashrc
+# Install Docker
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker minh
+power_state:
+  mode: reboot
+  message: "Rebooting to apply updates and configurations."
+  timeout: 30
+  condition: true
