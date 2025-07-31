@@ -1,0 +1,44 @@
+#cloud-config
+# Adapted from https://github.com/tech-otaku/hetzner-cloud-init
+fqdn: proxy.minh-nguyen.tech
+hostname: proxy.minh-nguyen.tech
+locale: en_US.UTF-8
+timezone: America/Los_Angeles
+package_update: true    # Implied with `package_upgrade: true`
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - openssh-server
+  - fail2ban
+  - ufw
+  - make
+  - nano
+  - git
+users:
+# Create new user `minh`
+  - name: minh
+    groups: sudo
+    lock_passwd: true
+    shell: /bin/bash
+# Non-production keys for illustrative purposes only,
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCy354szD9yNTleQlB9xzzNpxi/T+kk0GFZg/+bvMUpnt2XqK2LQ2yhCtsrqzGlivItddsIJR/OHMhLD5fGRv0TnJqyx4UC3fSKrl8tP97vRocsgkbr5pGnpVnGyekFodZ6r5Q4aX/xsLusL93iRv0tLmzW/KWRoUXXGrZdRCW04KR2mN9pqF/D4cbBAfGJBkJ/tfStNcKKS3AzJym0jDYetG2tRg/nNdRpmlxv57q1LbyfrINwFKTjsEupEPPTB7rHmBl4AjU+V+O9mwpCnY3Zvs9/g7EmJB0aV72Uadl21MmWqEOCYjK371zb3js3F0xQY0Cllt0z4MiMcGDaScYcbvDQgDmUm4J1yrZvOz+utOpEfWYyc8ydug57A/70W6z9frz0rPo0s/E9KGzDi/c5D3+2R+Rkxvr0KXnC4P8GzOF2W70j1r5gXdUx/i6vaPAZAywgFXPnqYEIbfwgKx9NABnL/3YlemC2PJ6673XwTK7mBz2bo8mmFXq+IzpbDJtuQk6vvIfAgT52n+xmJYawXVtkyicuKwkoNx/hTG54JlHw71isuJ9xjPwwQo3eVBEWDygXNw1JvC9zbUJjI1Hrd2vmKeUHdWmU/RJ2G0skHdN/tNyuLVRADG4c+Ckab/uTTVeuR8wMXrkEXOZzRCRRtb/AD6ajwpVvIn5S6WHeJQ== nxmin@Minhs-LG-Gram
+runcmd:
+  - sed -i 's/[# ]*set tabsize 8/set tabsize 4/g' /etc/nanorc
+# Configure Firewall
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 80/tcp # HTTP
+  - ufw allow 443/tcp # HTTPS
+  - ufw allow 22/tcp # SSH
+  - ufw enable
+# Configure .bashrc for `root`
+  - sed -i 's/($debian_chroot)}\\u\@\\h:\\/($debian_chroot)}\\u\@$(hostname -I | cut -d " " -f 1):\\/g' /root/.bashrc
+  - sed -i 's/($debian_chroot)}\\\[\\033\[01;32m\\\]\\u\@\\h/($debian_chroot)}\\\[\\033\[01;34m\\\]\\u\@$(hostname -I | cut -d " " -f 1)/g' /root/.bashrc
+# Configure .bashrc for `minh`
+  - sed -i -E 's/secure_path="(.*)"/secure_path="\1:\/home\/minh\/scripts"/g' /etc/sudoers
+  - sed -i 's/($debian_chroot)}\\u\@\\h:\\/($debian_chroot)}\\u\@$(hostname -I | cut -d " " -f 1):\\/g' /home/minh/.bashrc
+  - sed -i 's/($debian_chroot)}\\\[\\033\[01;32m\\\]\\u\@\\h/($debian_chroot)}\\\[\\033\[01;34m\\\]\\u\@$(hostname -I | cut -d " " -f 1)/g' /home/minh/.bashrc
+  - echo "alias update='sudo -- sh -c \"apt update; apt upgrade -y; apt dist-upgrade -y; apt autoremove -y; apt autoclean -y\"'" >> /home/minh/.bashrc
+  - echo "alias shutdown-r='sudo shutdown -r now'" >> /home/minh/.bashrc
+  - echo "export PATH=$PATH:/home/minh/scripts" >> /home/minh/.bashrc
