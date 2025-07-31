@@ -38,6 +38,7 @@ services:
     image: linuxserver/wireguard:latest
     container_name: wireguard
     network_mode: host
+    privileged: true
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -54,8 +55,6 @@ services:
     volumes:
       - ./wireguard/config:/config
       - /lib/modules:/lib/modules
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped
 
 networks:
