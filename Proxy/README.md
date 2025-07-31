@@ -15,9 +15,10 @@ Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
 ## Setup
 1. Update domains in NGINX configs and email in docker-compose.yaml
 2. Update home service IPs in NGINX configs (currently 192.168.87.x)
-3. Run: `docker-compose up -d`
-4. Generate certs: `docker-compose run --rm certbot`
-5. Install WireGuard client config on home network
+3. Add routing rule on VPS: `ip route add 192.168.87.0/24 dev wg0`
+4. Run: `docker-compose up -d`
+5. Generate certs: `docker-compose run --rm certbot`
+6. Install WireGuard client config on home network
 
 ## Adding Services
 1. Copy `service1.conf.template` to `newservice.conf`
