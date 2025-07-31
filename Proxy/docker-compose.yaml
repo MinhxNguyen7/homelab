@@ -23,7 +23,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email your-email@example.com -d your-domain.com --agree-tos
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email ${LETSENCRYPT_EMAIL} -d ${PRIMARY_DOMAIN} --agree-tos
 
   certbot-renew:
     image: certbot/certbot
@@ -43,15 +43,15 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+      - PUID=${WG_PUID}
+      - PGID=${WG_PGID}
+      - TZ=${WG_TZ}
       - SERVERURL=auto
-      - SERVERPORT=51820
-      - PEERS=1
+      - SERVERPORT=${WG_SERVERPORT}
+      - PEERS=${WG_PEERS}
       - PEERDNS=auto
-      - INTERNAL_SUBNET=10.13.13.0
-      - ALLOWEDIPS=192.168.87.0/24
+      - INTERNAL_SUBNET=${WG_INTERNAL_SUBNET}
+      - ALLOWEDIPS=${WG_INTERNAL_SUBNET}
     volumes:
       - ./wireguard/config:/config
       - /lib/modules:/lib/modules
