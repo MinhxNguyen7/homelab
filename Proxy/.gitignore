@@ -1,0 +1,4 @@
+# Docker volumes
+certbot/
+wireguard/
+nginx/logs/
