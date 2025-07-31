@@ -25,6 +25,15 @@ services:
       - ./certbot/www:/var/www/certbot
     command: certonly --webroot -w /var/www/certbot --force-renewal --email your-email@example.com -d your-domain.com --agree-tos
 
+  certbot-renew:
+    image: certbot/certbot
+    container_name: certbot-renew
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: sh -c "while :; do sleep 12h; certbot renew --quiet; done"
+    restart: unless-stopped
+
   wireguard:
     image: linuxserver/wireguard:latest
     container_name: wireguard

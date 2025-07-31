@@ -26,6 +26,10 @@ Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
 3. Generate cert: `docker-compose run --rm certbot certonly --webroot -w /var/www/certbot -d newservice.domain.com`
 4. Restart: `docker-compose restart nginx`
 
+## Maintenance
+- Certificates auto-renew via `certbot-renew` service (checks every 12 hours)
+- Monitor logs: `docker-compose logs -f`
+
 ## Network
 - NGINX terminates SSL, forwards HTTP through WireGuard tunnel
 - Home services receive unencrypted requests at 192.168.87.x
