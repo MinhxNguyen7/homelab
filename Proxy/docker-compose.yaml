@@ -2,29 +2,6 @@
 # Provides SSL termination with Let's Encrypt certificates
 
 services:
-  # SSL Certificate Initialization - ensures certificates exist before nginx starts
-  ssl-init:
-    image: certbot/certbot
-    container_name: ssl-init
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    environment:
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    entrypoint: ""
-    command: >
-      sh -c "
-      echo 'Checking SSL certificates...';
-      if [ ! -f /etc/letsencrypt/live/proxy.minh-nguyen.tech/fullchain.pem ]; then
-        echo 'SSL certificates not found. Generating...';
-        certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech --agree-tos --non-interactive;
-      else
-        echo 'SSL certificates already exist.';
-      fi
-      "
-    networks:
-      - proxy-network
-
   # NGINX reverse proxy with SSL termination
   nginx:
     image: nginx:alpine
@@ -42,8 +19,6 @@ services:
     networks:
       - proxy-network
     depends_on:
-      ssl-init:
-        condition: service_completed_successfully
       wireguard:
         condition: service_started
 
@@ -56,9 +31,6 @@ services:
       - ./certbot/www:/var/www/certbot
     command: sh -c "while :; do sleep 12h; certbot renew --quiet; done"
     restart: unless-stopped
-    depends_on:
-      ssl-init:
-        condition: service_completed_successfully
     networks:
       - proxy-network
 

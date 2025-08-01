@@ -1,0 +1,61 @@
+# Temporary SSL Certificate Setup
+# This compose file creates a temporary nginx server for ACME challenges
+# and generates SSL certificates before the main proxy starts
+
+services:
+  # Temporary nginx server for ACME challenge only
+  temp-nginx:
+    image: nginx:alpine
+    container_name: temp-nginx-ssl
+    ports:
+      - '80:80'
+    volumes:
+      - ./certbot/www:/var/www/certbot
+    command: >
+      sh -c "
+      echo 'Creating temporary nginx configuration for ACME challenge...' &&
+      echo 'server {
+          listen 80;
+          server_name proxy1.minh-nguyen.tech cloud1.minh-nguyen.tech _;
+          
+          location /.well-known/acme-challenge/ {
+              root /var/www/certbot;
+          }
+          
+          location / {
+              return 200 \"Temporary server for SSL certificate generation\";
+              add_header Content-Type text/plain;
+          }
+      }' > /etc/nginx/conf.d/temp-ssl.conf &&
+      echo 'Starting temporary nginx...' &&
+      nginx -g 'daemon off;'
+      "
+    networks:
+      - ssl-setup
+
+  # SSL Certificate generation
+  certbot-setup:
+    image: certbot/certbot
+    container_name: certbot-setup
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    environment:
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    entrypoint: ""
+    command: >
+      sh -c "
+      echo 'Waiting for nginx to be ready...' &&
+      sleep 10 &&
+      echo 'Generating SSL certificates for proxy1.minh-nguyen.tech and cloud1.minh-nguyen.tech...' &&
+      certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy1.minh-nguyen.tech -d cloud1.minh-nguyen.tech --agree-tos --non-interactive &&
+      echo 'SSL certificates generated successfully!'
+      "
+    depends_on:
+      - temp-nginx
+    networks:
+      - ssl-setup
+
+networks:
+  ssl-setup:
+    driver: bridge
