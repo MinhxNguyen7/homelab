@@ -29,7 +29,7 @@ WireGuard client to connect home network to VPS proxy for internet access to hom
 ## How it works
 
 - Client gets IP `10.13.13.2` on VPN network
-- Routes traffic for `192.168.87.0/24` through VPS
+- Routes traffic for `192.168.10.0/24` through VPS
 - VPS NGINX proxies incoming requests to home services
 - Enables internet access to homelab via domain names
 

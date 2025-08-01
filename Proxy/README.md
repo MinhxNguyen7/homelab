@@ -3,7 +3,7 @@
 Proxy internet traffic to homelab services through WireGuard tunnel with SSL termination.
 
 ## Architecture
-Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
+Internet → NGINX (SSL) → WireGuard → Home services (192.168.10.0/24)
 
 ## Files
 - `docker-compose.yaml` - Main services (NGINX, WireGuard, Certbot)
@@ -15,7 +15,7 @@ Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
 
 ## Setup
 1. Update `.env` file with your email and domains
-2. Update home service IPs in NGINX configs (currently 192.168.87.x)
+2. Update home service IPs in NGINX configs (currently 192.168.10.x)
 3. Update certbot domains in docker-compose.yaml if needed
 4. Run: `docker-compose up -d` (routing is set up automatically)
 5. Generate certs: `docker-compose run --rm certbot`
@@ -34,5 +34,5 @@ Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
 
 ## Network
 - NGINX terminates SSL, forwards HTTP through WireGuard tunnel
-- Home services receive unencrypted requests at 192.168.87.x
+- Home services receive unencrypted requests at 192.168.10.x
 - WireGuard provides encryption between VPS and home
