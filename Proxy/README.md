@@ -16,15 +16,17 @@ Internet → NGINX (SSL) → WireGuard → Home services (192.168.87.0/24)
 ## Setup
 1. Update `.env` file with your email and domains
 2. Update home service IPs in NGINX configs (currently 192.168.87.x)
-3. Run: `docker-compose up -d` (routing is set up automatically)
-4. Generate certs: `docker-compose run --rm certbot`
-5. Install WireGuard client config on home network
+3. Update certbot domains in docker-compose.yaml if needed
+4. Run: `docker-compose up -d` (routing is set up automatically)
+5. Generate certs: `docker-compose run --rm certbot`
+6. Install WireGuard client config on home network
 
 ## Adding Services
 1. Copy `service1.conf.template` to `newservice.conf`
 2. Update `server_name` and `proxy_pass` 
-3. Add domain to `CERTBOT_DOMAINS` in `.env` file
-4. Restart: `docker-compose restart`
+3. Add domain to certbot command in docker-compose.yaml
+4. Regenerate certs: `docker-compose run --rm certbot`
+5. Restart: `docker-compose restart nginx`
 
 ## Maintenance
 - Certificates auto-renew via `certbot-renew` service (checks every 12 hours)

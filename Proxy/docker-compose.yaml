@@ -28,6 +28,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    # NOTE: Remember to update the domains when adding/configuring services
     command: certonly --webroot -w /var/www/certbot --force-renewal --email ${LETSENCRYPT_EMAIL} -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech --agree-tos
 
   # Automatic certificate renewal service
