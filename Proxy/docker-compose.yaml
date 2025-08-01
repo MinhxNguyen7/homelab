@@ -37,7 +37,6 @@ services:
   wireguard:
     image: linuxserver/wireguard:latest
     container_name: wireguard
-    network_mode: host
     privileged: true
     cap_add:
       - NET_ADMIN
@@ -51,11 +50,17 @@ services:
       - PEERS=${WG_PEERS}
       - PEERDNS=auto
       - INTERNAL_SUBNET=${WG_INTERNAL_SUBNET}
-      - ALLOWEDIPS=${WG_INTERNAL_SUBNET}
+      - ALLOWEDIPS=${WG_ALLOWEDIPS}
+    ports:
+      - '${WG_SERVERPORT}:51820/udp'
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     volumes:
       - ./wireguard/config:/config
       - /lib/modules:/lib/modules
     restart: unless-stopped
+    networks:
+      - proxy-network
 
 networks:
   proxy-network:
