@@ -28,7 +28,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: sh -c "certonly --webroot -w /var/www/certbot --force-renewal --email ${LETSENCRYPT_EMAIL} $(echo ${CERTBOT_DOMAINS} | sed 's/[^ ]* */-d &/g') --agree-tos"
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email ${LETSENCRYPT_EMAIL} -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech --agree-tos
 
   # Automatic certificate renewal service
   certbot-renew:
