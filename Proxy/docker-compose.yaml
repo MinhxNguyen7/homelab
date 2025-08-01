@@ -11,13 +11,15 @@ services:
       - ./certbot/www:/var/www/certbot
     environment:
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-    command: sh -c "
-      echo 'Checking SSL certificates...' &&
+    entrypoint: ""
+    command: >
+      sh -c "
+      echo 'Checking SSL certificates...';
       if [ ! -f /etc/letsencrypt/live/proxy.minh-nguyen.tech/fullchain.pem ]; then
-        echo 'SSL certificates not found. Generating...' &&
-        certbot certonly --webroot -w /var/www/certbot --email $${LETSENCRYPT_EMAIL} -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech --agree-tos --non-interactive
+        echo 'SSL certificates not found. Generating...';
+        certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech --agree-tos --non-interactive;
       else
-        echo 'SSL certificates already exist.'
+        echo 'SSL certificates already exist.';
       fi
       "
     networks:
