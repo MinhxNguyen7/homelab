@@ -25,3 +25,5 @@ sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
 # Print out status
 echo "Tailscale status:"; echo
 tailscale status
+
+echo "Tailscale setup complete. You may need to reboot for all changes to take effect."
