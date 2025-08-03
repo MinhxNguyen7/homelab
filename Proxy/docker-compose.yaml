@@ -7,16 +7,15 @@ services:
     image: nginx:alpine
     container_name: nginx-proxy
     restart: unless-stopped
-    # ports:
-    #   - '80:80'
-    #   - '443:443'
+    ports:
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
       - ./nginx/logs:/var/log/nginx
-    network_mode: service:tailscale
 
   # Automatic certificate renewal service
   certbot-renew:
@@ -25,8 +24,6 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: sh -c "while :; do sleep 12h; certbot renew --quiet; done"
     restart: unless-stopped
-
-    network_mode: service:tailscale
-
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  
