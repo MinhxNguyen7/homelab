@@ -5,10 +5,10 @@
 
 set -e
 
-echo "🔧 Setting up SSL certificates for proxy.minh-nguyen.tech and cloud.minh-nguyen.tech..."
+echo "🔧 Setting up SSL certificates for proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, and owntracks.minh-nguyen.tech..."
 
 # Check if domains are configured in DNS
-echo "⚠️  Make sure proxy.minh-nguyen.tech and cloud.minh-nguyen.tech point to this server!"
+echo "⚠️  Make sure proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, and owntracks.minh-nguyen.tech point to this server!"
 echo "📧 Email configured: $(grep LETSENCRYPT_EMAIL .env | cut -d= -f2)"
 echo ""
 
@@ -30,7 +30,7 @@ if [ -f "certbot/conf/live/proxy.minh-nguyen.tech/fullchain.pem" ]; then
 else
     echo "❌ SSL certificate generation failed!"
     exit 1
-fiW
+fi
 
 echo ""
 echo "✅ Setup complete! Certificates should be ready."
