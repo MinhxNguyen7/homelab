@@ -2,3 +2,6 @@
 certbot/
 wireguard/
 nginx/logs/
+
+# Nginx configuration files
+.htpasswd
