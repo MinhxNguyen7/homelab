@@ -5,10 +5,10 @@
 
 set -e
 
-echo "🔧 Setting up SSL certificates for proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, and owntracks.minh-nguyen.tech..."
+echo "🔧 Setting up SSL certificates for proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, owntracks.minh-nguyen.tech, and traccar.minh-nguyen.tech..."
 
 # Check if domains are configured in DNS
-echo "⚠️  Make sure proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, and owntracks.minh-nguyen.tech point to this server!"
+echo "⚠️  Make sure proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, owntracks.minh-nguyen.tech, and traccar.minh-nguyen.tech point to this server!"
 echo "📧 Email configured: $(grep LETSENCRYPT_EMAIL .env | cut -d= -f2)"
 echo ""
 
@@ -37,6 +37,7 @@ echo "✅ Setup complete! Certificates should be ready."
 echo "🌐 You can access:"
 echo "   - https://proxy.minh-nguyen.tech"
 echo "   - https://cloud.minh-nguyen.tech"
+echo "   - https://traccar.minh-nguyen.tech"
 echo ""
 echo "📋 To check status: docker compose ps"
 echo "📋 To view logs: docker compose logs -f nginx"

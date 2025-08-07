@@ -16,7 +16,7 @@ services:
       echo 'Creating temporary nginx configuration for ACME challenge...' &&
       echo 'server {
           listen 80;
-          server_name proxy.minh-nguyen.tech cloud.minh-nguyen.tech owntracks.minh-nguyen.tech _;
+          server_name proxy.minh-nguyen.tech cloud.minh-nguyen.tech owntracks.minh-nguyen.tech traccar.minh-nguyen.tech _;
           
           location /.well-known/acme-challenge/ {
               root /var/www/certbot;
@@ -47,8 +47,8 @@ services:
       sh -c "
       echo 'Waiting for nginx to be ready...' &&
       sleep 10 &&
-      echo 'Generating SSL certificates for proxy.minh-nguyen.tech and cloud.minh-nguyen.tech...' &&
-      certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech -d owntracks.minh-nguyen.tech  --expand --agree-tos --non-interactive &&
+      echo 'Generating SSL certificates for proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, owntracks.minh-nguyen.tech, and traccar.minh-nguyen.tech...' &&
+      certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech -d owntracks.minh-nguyen.tech -d traccar.minh-nguyen.tech --expand --agree-tos --non-interactive &&
       echo 'SSL certificates generated successfully!'
       "
     depends_on:
