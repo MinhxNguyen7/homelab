@@ -1,61 +1,24 @@
-# Temporary SSL Certificate Setup
-# This compose file creates a temporary nginx server for ACME challenges
-# and generates SSL certificates before the main proxy starts
+# Temporary SSL Certificate Setup with Cloudflare DNS Challenge
+# This compose file generates wildcard SSL certificates using Cloudflare DNS challenge
+# No need for a temporary nginx server since DNS challenge doesn't require HTTP validation
 
 services:
-  # Temporary nginx server for ACME challenge only
-  temp-nginx:
-    image: nginx:alpine
-    container_name: temp-nginx-ssl
-    ports:
-      - '80:80'
-    volumes:
-      - ./certbot/www:/var/www/certbot
-    command: >
-      sh -c "
-      echo 'Creating temporary nginx configuration for ACME challenge...' &&
-      echo 'server {
-          listen 80;
-          server_name proxy.minh-nguyen.tech cloud.minh-nguyen.tech owntracks.minh-nguyen.tech traccar.minh-nguyen.tech _;
-          
-          location /.well-known/acme-challenge/ {
-              root /var/www/certbot;
-          }
-          
-          location / {
-              return 200 \"Temporary server for SSL certificate generation\";
-              add_header Content-Type text/plain;
-          }
-      }' > /etc/nginx/conf.d/temp-ssl.conf &&
-      echo 'Starting temporary nginx...' &&
-      nginx -g 'daemon off;'
-      "
-    networks:
-      - ssl-setup
-
-  # SSL Certificate generation
+  # SSL Certificate generation using Cloudflare DNS challenge
   certbot-setup:
-    image: certbot/certbot
+    image: certbot/dns-cloudflare
     container_name: certbot-setup
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
     environment:
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     entrypoint: ""
     command: >
       sh -c "
-      echo 'Waiting for nginx to be ready...' &&
-      sleep 10 &&
-      echo 'Generating SSL certificates for proxy.minh-nguyen.tech, cloud.minh-nguyen.tech, owntracks.minh-nguyen.tech, and traccar.minh-nguyen.tech...' &&
-      certbot certonly --webroot -w /var/www/certbot --email $$LETSENCRYPT_EMAIL -d proxy.minh-nguyen.tech -d cloud.minh-nguyen.tech -d owntracks.minh-nguyen.tech -d traccar.minh-nguyen.tech --expand --agree-tos --non-interactive &&
-      echo 'SSL certificates generated successfully!'
+      echo 'Creating Cloudflare credentials file...' &&
+      echo 'dns_cloudflare_api_token = ${CLOUDFLARE_API_TOKEN}' > /etc/letsencrypt/cloudflare.ini &&
+      chmod 600 /etc/letsencrypt/cloudflare.ini &&
+      echo 'Generating wildcard SSL certificate for *.minh-nguyen.tech...' &&
+      certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini --email ${LETSENCRYPT_EMAIL} -d '*.minh-nguyen.tech' -d 'minh-nguyen.tech' --agree-tos --non-interactive &&
+      echo 'Wildcard SSL certificate generated successfully!'
       "
-    depends_on:
-      - temp-nginx
-    networks:
-      - ssl-setup
-
-networks:
-  ssl-setup:
-    driver: bridge
